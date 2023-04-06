@@ -28,7 +28,7 @@ def help_message():
 
 
 def can_you_do_message():
-    return """Привет! Я простой Городовед. Я могу:
+    return """Я простой Городовед. Я могу:
                 - Найти столицу страны;
                 - Определить страну по городу;
                 - Найти расстояние между двумя городами России.
@@ -69,7 +69,7 @@ def handle_dialog(res, req):
         can_you_do = search_can_you_do(req)
         if can_you_do == "Что ты умеешь":
             res['response']['text'] = can_you_do_message()
-        if action is None:
+        elif action is None:
             res['response']['text'] = "Что-то непонятное. Повтори запрос."
         elif action == "Стоп":
             res['response']['text'] = "Пока!"
