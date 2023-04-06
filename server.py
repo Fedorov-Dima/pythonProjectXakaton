@@ -90,14 +90,14 @@ def handle_dialog(res, req):
     elif sessionStorage[user_id]['action'] == "Найти столицу страны":
         help = search_help(req)
         can_you_do = search_can_you_do(req)
+        countryes = get_countryes(req)
         if help:
             res['response']['text'] = help_message()
             sessionStorage[user_id]['action'] = None
         elif can_you_do:
             res['response']['text'] = can_you_do_message()
             sessionStorage[user_id]['action'] = None
-        countryes = get_countryes(req)
-        if not countryes:
+        elif not countryes:
             res['response']['text'] = 'Ты не написал название не одной страны!'
         elif len(countryes) == 1:
             res['response']['text'] = f"""Столица этой страны - {get_capitalcity(countryes[0])}
@@ -108,14 +108,14 @@ def handle_dialog(res, req):
     elif sessionStorage[user_id]['action'] == "Найти расстояние между двумя городами России":
         help = search_help(req)
         can_you_do = search_can_you_do(req)
+        cities = get_cities(req)
         if help:
             res['response']['text'] = help_message()
             sessionStorage[user_id]['action'] = None
         elif can_you_do:
             res['response']['text'] = can_you_do_message()
             sessionStorage[user_id]['action'] = None
-        cities = get_cities(req)
-        if not cities:
+        elif not cities:
             res['response']['text'] = 'Ты не написал название не одного города!'
         elif len(cities) == 1:
             res['response']['text'] = 'Ты написал только 1 город России'
@@ -130,14 +130,14 @@ def handle_dialog(res, req):
     elif sessionStorage[user_id]['action'] == "Определить страну по городу":
         help = search_help(req)
         can_you_do = search_can_you_do(req)
+        cities = get_cities(req)
         if help:
             res['response']['text'] = help_message()
             sessionStorage[user_id]['action'] = None
         elif can_you_do:
             res['response']['text'] = can_you_do_message()
             sessionStorage[user_id]['action'] = None
-        cities = get_cities(req)
-        if not cities:
+        elif not cities:
             res['response']['text'] = 'Ты не написал название не одного города!'
         elif len(cities) == 1:
             res['response']['text'] = f"""Этот город в стране - {get_country(cities[0])}
