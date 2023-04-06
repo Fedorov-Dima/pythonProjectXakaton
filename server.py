@@ -16,6 +16,25 @@ logging.basicConfig(level=logging.INFO, filename='app.log',
 sessionStorage = {}
 
 
+def help_message():
+    return """Для начала выберете, что хотите найти.
+                
+                Чтобы узнать столицу страны, введите название одной страны.
+                Чтобы узнать страну, в которой находится город, введите название одного города.
+                Чтобы узнать расстояние между двумя городами России, введите названия двух городов России.
+                Чтобы прекратить работу навыка введите 'Стоп', 'Выход' и т.п.
+                
+                Итак, что ищем?"""
+
+
+def can_you_do_message():
+    return """Привет! Я простой Городовед. Я могу:
+                - Найти столицу страны;
+                - Определить страну по городу;
+                - Найти расстояние между двумя городами России.
+             Что бы я начал поиск, введите одну из команд."""
+
+
 @app.route('/post', methods=['POST'])
 def main():
     logging.info('Request: %r', request.json)
@@ -47,6 +66,7 @@ def handle_dialog(res, req):
     if sessionStorage[user_id]['action'] is None:
         # res['response']['text'] = 'Что ищем?'
         action = get_action(req)
+        can_you_do = search_can_you_do(req)
         if action is None:
             res['response']['text'] = "Что-то непонятное. Повтори запрос."
         elif action == "Стоп":
@@ -54,15 +74,9 @@ def handle_dialog(res, req):
             res['response']['end_session'] = True
             return
         elif action == "Помощь":
-            res['response']['text'] = """
-                Для начала выберете, что хотите найти.
-                
-                Чтобы узнать столицу страны, введите название одной страны.
-                Чтобы узнать страну, в которой находится город, введите название одного города.
-                Чтобы узнать расстояние между двумя городами России, введите названия двух городов России.
-                Чтобы прекратить работу навыка введите 'Стоп', 'Выход' и т.п.
-                
-                Итак, что ищем?"""
+            res['response']['text'] = help_message()
+        elif can_you_do == "Что ты умеешь":
+            res['response']['text'] = can_you_do_message()
         elif action == "Найти столицу страны":
             res['response']['text'] = "Введите название страны"
             sessionStorage[user_id]['action'] = action
@@ -74,6 +88,14 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['action'] = action
 
     elif sessionStorage[user_id]['action'] == "Найти столицу страны":
+        help = search_help(req)
+        can_you_do = search_can_you_do(req)
+        if help:
+            res['response']['text'] = help_message()
+            sessionStorage[user_id]['action'] = None
+        elif can_you_do:
+            res['response']['text'] = can_you_do_message()
+            sessionStorage[user_id]['action'] = None
         countryes = get_countryes(req)
         if not countryes:
             res['response']['text'] = 'Ты не написал название не одной страны!'
@@ -84,6 +106,14 @@ def handle_dialog(res, req):
         else:
             res['response']['text'] = 'Слишком много стран!'
     elif sessionStorage[user_id]['action'] == "Найти расстояние между двумя городами России":
+        help = search_help(req)
+        can_you_do = search_can_you_do(req)
+        if help:
+            res['response']['text'] = help_message()
+            sessionStorage[user_id]['action'] = None
+        elif can_you_do:
+            res['response']['text'] = can_you_do_message()
+            sessionStorage[user_id]['action'] = None
         cities = get_cities(req)
         if not cities:
             res['response']['text'] = 'Ты не написал название не одного города!'
@@ -98,6 +128,14 @@ def handle_dialog(res, req):
         else:
             res['response']['text'] = 'Слишком много городов!'
     elif sessionStorage[user_id]['action'] == "Определить страну по городу":
+        help = search_help(req)
+        can_you_do = search_can_you_do(req)
+        if help:
+            res['response']['text'] = help_message()
+            sessionStorage[user_id]['action'] = None
+        elif can_you_do:
+            res['response']['text'] = can_you_do_message()
+            sessionStorage[user_id]['action'] = None
         cities = get_cities(req)
         if not cities:
             res['response']['text'] = 'Ты не написал название не одного города!'
@@ -107,6 +145,24 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['action'] = None
         else:
             res['response']['text'] = 'Слишком много городов!'
+
+
+def search_help(req):
+    command = req['request']['nlu']['tokens']
+    for com in command:
+        com = com.lower()
+        if com in ['помощь',
+                   'справка',
+                   'помоги',
+                   'подскажи',
+                   'инструкция']:
+            return "Помощь"
+
+
+def search_can_you_do(req):
+    command = req['request']['command']
+    if 'что ты умеешь' in command:
+        return 'Что ты умеешь'
 
 
 def get_action(req):
