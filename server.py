@@ -67,6 +67,8 @@ def handle_dialog(res, req):
         # res['response']['text'] = 'Что ищем?'
         action = get_action(req)
         can_you_do = search_can_you_do(req)
+        if can_you_do == "Что ты умеешь":
+            res['response']['text'] = can_you_do_message()
         if action is None:
             res['response']['text'] = "Что-то непонятное. Повтори запрос."
         elif action == "Стоп":
@@ -75,8 +77,6 @@ def handle_dialog(res, req):
             return
         elif action == "Помощь":
             res['response']['text'] = help_message()
-        elif can_you_do == "Что ты умеешь":
-            res['response']['text'] = can_you_do_message()
         elif action == "Найти столицу страны":
             res['response']['text'] = "Введите название страны"
             sessionStorage[user_id]['action'] = action
@@ -160,8 +160,8 @@ def search_help(req):
 
 
 def search_can_you_do(req):
-    command = req['request']['command']
-    if 'что ты умеешь' in command:
+    command = req['request']['command'].lower()
+    if 'что ты умеешь' in command or 'что ты умеешь?' in command:
         return 'Что ты умеешь'
 
 
