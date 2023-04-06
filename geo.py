@@ -58,7 +58,7 @@ def get_capitalcity(country_name):
         result = Translator().translate(country_name)
         capital = CountryInfo(result.text).capital()
         result = Translator().translate(capital, src='en', dest='ru')
-        return result
+        return result.text
     except Exception as e:
         return e
 
